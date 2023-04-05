@@ -15,11 +15,10 @@ export default class MoviesApp extends Component {
 
   constructor(props) {
     super(props)
-    this.updateFilms('John Wick')
+    this.updateFilms('john wick')
   }
 
   onFilmsLoaded = (films) => {
-    console.log(films)
     this.setState({ films })
   }
 
@@ -28,7 +27,8 @@ export default class MoviesApp extends Component {
   }
 
   render() {
-    const { films } = this.state.films
+    const { films } = this.state
+    console.log(films)
     return (
       <Layout>
         <Content className="movies-container">

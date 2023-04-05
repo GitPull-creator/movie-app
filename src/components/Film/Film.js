@@ -1,10 +1,11 @@
 import React from 'react'
-import './Film.css'
-import { Col, Row, Space, Typography } from 'antd'
 import { format } from 'date-fns'
+import { Row, Col, Typography, Space } from 'antd'
 
 import { getShortText } from '../../TextUtil/TextUtil'
-const { Title, Text } = Typography
+
+import './Film.css'
+
 const Film = ({ title, description, date, genres, poster }) => {
   return (
     <Row className="film-item">
@@ -12,17 +13,17 @@ const Film = ({ title, description, date, genres, poster }) => {
         <img src={poster} alt="poster" className="film-item__img" />
       </Col>
       <Col flex="3" className="film-item__content">
-        <Title level={4}>{title}</Title>
+        <Typography.Title level={4}>{title}</Typography.Title>
         <Space size={7} direction="vertical">
-          <Text type="secondary">{format(date, 'MMMM d, Y')}</Text>
+          <Typography.Text type="secondary">{format(date, 'MMMM d, Y')}</Typography.Text>
           <Space size={8}>
             {genres.map((genre) => (
-              <Text code key={genre}>
-                {genre}zz
-              </Text>
+              <Typography.Text code key={genre}>
+                {genre}
+              </Typography.Text>
             ))}
           </Space>
-          <Text>{getShortText(description)}</Text>
+          <Typography.Text>{getShortText(description)}</Typography.Text>
         </Space>
       </Col>
     </Row>

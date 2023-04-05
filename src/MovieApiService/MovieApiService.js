@@ -12,18 +12,21 @@ export default class MovieApiService {
   getPosterUrl(imagePath) {
     return `https://image.tmdb.org/t/p/original${imagePath}`
   }
+  isValidDate = (d) => {
+    return d instanceof Date && !isNaN(d)
+  }
 
   getMovies = async (query) => {
     const res = await this.getResource(`${this._baseUrl}${this._apyKey}&language=en-US&query=${query}`)
     return res.results.map(this._transformMovies)
   }
 
-  _transformMovies = ({ id, original_title, release_date, genres_ids, overview, poster_path }) => {
+  _transformMovies = ({ id, original_title, release_date, /*genres_ids,*/ overview, poster_path }) => {
     return {
       id: id,
       title: original_title,
-      date: new Date(release_date),
-      genres: ['Drama', 'Action', genres_ids],
+      date: this.isValidDate(new Date(release_date)) ? new Date(release_date) : new Date(),
+      genres: ['Drama', 'Action'],
       description: overview,
       poster: this.getPosterUrl(poster_path),
     }
