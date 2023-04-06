@@ -8,18 +8,29 @@ import FilmList from '../FilmList'
 import MovieApiService from '../../MovieApiService/MovieApiService'
 import Spinner from '../Spinner'
 import AlertMessage from '../AlertMessage'
+import SearchForm from '../SearchForm'
 
 export default class MoviesApp extends Component {
   apiService = new MovieApiService()
   state = {
+    searchFormText: 'john wick',
     films: [],
     loading: true,
     error: false,
   }
 
-  constructor(props) {
-    super(props)
+  componentDidMount() {
     this.updateFilms('john wick')
+  }
+
+  onSearchTextChange = (searchFormText) => {
+    if (searchFormText === '') return
+
+    this.setState({
+      loading: true,
+      searchFormText,
+    })
+    this.updateFilms(searchFormText)
   }
 
   onError = () => {
@@ -42,6 +53,9 @@ export default class MoviesApp extends Component {
     return (
       <Layout>
         <Content className="movies-container">
+          <header className="movies-container__search-from">
+            <SearchForm onChangeDebounced={this.onSearchTextChange} />
+          </header>
           {errorMessage}
           {spinner}
           {content}
