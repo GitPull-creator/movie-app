@@ -15,7 +15,7 @@ const Film = ({ title, description, date, genres, poster }) => {
       <Col flex="3" className="film-item__content">
         <Typography.Title level={4}>{title}</Typography.Title>
         <Space size={7} direction="vertical">
-          <Typography.Text type="secondary">{format(date, 'MMMM d, Y')}</Typography.Text>
+          {date ? <Typography.Text type="secondary">{format(date, 'MMMM d, Y')}</Typography.Text> : null}
           <Space size={8}>
             {genres.map((genre) => (
               <Typography.Text code key={genre}>

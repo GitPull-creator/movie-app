@@ -25,7 +25,7 @@ export default class MovieApiService {
     return {
       id: id,
       title: original_title,
-      date: this.isValidDate(new Date(release_date)) ? new Date(release_date) : new Date(),
+      date: this.isValidDate(new Date(release_date)) ? new Date(release_date) : false,
       genres: ['Drama', 'Action'],
       description: overview,
       poster: this.getPosterUrl(poster_path),
