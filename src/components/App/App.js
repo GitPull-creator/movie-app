@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Layout } from 'antd'
+import { Layout, Pagination } from 'antd'
 import './App.css'
 import 'antd/dist/reset.css'
 import { Content } from 'antd/es/layout/layout'
@@ -14,13 +14,15 @@ export default class MoviesApp extends Component {
   apiService = new MovieApiService()
   state = {
     searchFormText: 'john wick',
+    currentPage: 1,
+    countItems: null,
     films: [],
     loading: true,
     error: false,
   }
 
   componentDidMount() {
-    this.updateFilms('john wick')
+    this.updateFilms(this.state.searchFormText, this.state.currentPage)
   }
 
   onSearchTextChange = (searchFormText) => {
@@ -29,24 +31,37 @@ export default class MoviesApp extends Component {
     this.setState({
       loading: true,
       searchFormText,
+      currentPage: 1,
+      countItems: null,
     })
     this.updateFilms(searchFormText)
+  }
+
+  handleCurrentPageChange = (currentPage) => {
+    const { searchFormText } = this.state
+    this.setState({
+      loading: true,
+      currentPage,
+    })
+
+    this.updateFilms(searchFormText, currentPage)
   }
 
   onError = () => {
     this.setState({ loading: false, error: true })
   }
 
-  onFilmsLoaded = (films) => {
-    this.setState({ films, loading: false })
+  onFilmsLoaded = ({ films, currentPage, countItems }) => {
+    this.setState({ films, currentPage, countItems, loading: false })
   }
 
-  updateFilms(query) {
-    this.apiService.getMovies(query).then(this.onFilmsLoaded).catch(this.onError)
+  updateFilms(query, page) {
+    this.apiService.getMovies(query, page).then(this.onFilmsLoaded).catch(this.onError)
   }
 
   render() {
-    const { films, loading, error } = this.state
+    const { films, loading, error, currentPage, countItems } = this.state
+    console.log(films)
     const errorMessage = error ? <AlertMessage /> : null
     const spinner = loading ? <Spinner /> : null
     const content = !(loading || error) ? <FilmList films={films} /> : null
@@ -59,6 +74,16 @@ export default class MoviesApp extends Component {
           {errorMessage}
           {spinner}
           {content}
+          <Pagination
+            className="movies-container__pagination"
+            size="small"
+            hideOnSinglePage
+            showSizeChanger={false}
+            current={currentPage}
+            defaultPageSize={20}
+            total={countItems}
+            onChange={this.handleCurrentPageChange}
+          />
         </Content>
       </Layout>
     )

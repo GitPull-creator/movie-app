@@ -16,19 +16,30 @@ export default class MovieApiService {
     return d instanceof Date && !isNaN(d)
   }
 
-  getMovies = async (query) => {
-    const res = await this.getResource(`${this._baseUrl}${this._apyKey}&language=en-US&query=${query}`)
-    return res.results.map(this._transformMovies)
+  getMovies = async (query, page = 1) => {
+    return await this.getResource(`${this._baseUrl}${this._apyKey}&language=en-US&query=${query}&page=${page}`).then(
+      (res) => {
+        const { page: currentPage, total_pages: countPages, total_results: countItems, results } = res
+        return {
+          currentPage,
+          countPages,
+          countItems,
+          films: this._transformMovies(results),
+        }
+      }
+    )
   }
 
-  _transformMovies = ({ id, original_title, release_date, /*genres_ids,*/ overview, poster_path }) => {
-    return {
-      id: id,
-      title: original_title,
-      date: this.isValidDate(new Date(release_date)) ? new Date(release_date) : false,
-      genres: ['Drama', 'Action'],
-      description: overview,
-      poster: this.getPosterUrl(poster_path),
-    }
+  _transformMovies(arr) {
+    return arr.map(({ id, original_title, release_date, /*genres_ids,*/ overview, poster_path }) => {
+      return {
+        id: id,
+        title: original_title,
+        date: this.isValidDate(new Date(release_date)) ? new Date(release_date) : false,
+        genres: ['Drama', 'Action'],
+        description: overview,
+        poster: this.getPosterUrl(poster_path),
+      }
+    })
   }
 }
