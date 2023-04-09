@@ -1,0 +1,27 @@
+.film-rate {
+    width: 34px;
+    height: 34px;
+    padding: 4px 0;
+    text-align: center;
+    border: 2px solid #E9D100;
+    border-radius: 50%;
+    line-height: 22px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.film-rate--color-1 {
+    border-color: #E90000;
+}
+
+.film-rate--color-2 {
+    border-color: #E97E00;
+}
+
+.film-rate--color-3 {
+    border-color: #E9D100;
+}
+
+.film-rate--color-4 {
+    border-color: #66E900;
+}
