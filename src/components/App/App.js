@@ -13,14 +13,16 @@ export default class MoviesApp extends Component {
   apiService = new MovieApiService()
   state = {
     sessionId: '',
-    dictionary: [],
   }
 
   componentDidMount() {
-    this.apiService.newGuestSession().then(this.onSessionLoaded)
-    this.apiService.getGenresDictionary().then((dictionary) => {
-      this.setState({ dictionary })
+    this.apiService.getGenresDictionary().then((genres) => {
+      this.setState({
+        genres,
+      })
     })
+
+    this.apiService.newGuestSession().then(this.onSessionLoaded)
   }
   onSessionLoaded = ({ sessionId }) => {
     this.setState({ sessionId })

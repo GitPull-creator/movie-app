@@ -16,9 +16,15 @@ export default class SearchPage extends Component {
     films: [],
     loading: true,
     error: false,
+    genres: '',
   }
 
   componentDidMount() {
+    this.apiService.getGenresDictionary().then((genres) => {
+      this.setState({
+        genres,
+      })
+    })
     this.updateFilms(this.state.searchFormText, this.state.currentPage)
   }
 
@@ -82,7 +88,6 @@ export default class SearchPage extends Component {
 }
 
 const View = ({ films, currentPage, countItems, onCurrentPageChange }) => {
-  console.log(films)
   return (
     <>
       <FilmList films={films} />

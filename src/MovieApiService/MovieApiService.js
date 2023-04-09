@@ -54,10 +54,6 @@ export default class MovieApiService {
     })
   }
 
-  _transformGenreIds(genreIds, genres) {
-    return genreIds.map((genreId) => genres[genreId])
-  }
-
   _transformMovies(arr) {
     return arr.map(({ id, original_title, release_date, genre_ids, overview, poster_path, vote_average }) => {
       return {
@@ -70,5 +66,9 @@ export default class MovieApiService {
         rate: vote_average,
       }
     })
+  }
+
+  _transformGenreIds(genreIds, genres) {
+    return genreIds.map((genreId) => genres[genreId])
   }
 }
