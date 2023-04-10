@@ -19,15 +19,6 @@ export default class RatedPage extends Component {
   componentDidMount() {
     this.updateFilms(this.state.currentPage)
   }
-
-  componentDidUpdate({ ratedListChanged: prevRatedListChanged }) {
-    const { ratedListChanged } = this.props
-
-    if (ratedListChanged !== prevRatedListChanged) {
-      this.updateFilms()
-    }
-  }
-
   OnCurrentPageChange = (currentPage) => {
     this.setState({
       loading: true,
@@ -50,11 +41,10 @@ export default class RatedPage extends Component {
     this.apiService.getMoviesRating(page, sessionId).then(this.onFilmsLoaded).catch(this.onError)
   }
   handleFilmRateChange = async (filmId, rating) => {
-    const { onChangeRatedList, sessionId } = this.props
+    const { sessionId } = this.props
 
     try {
-      const { success } = await this.apiService.rateMovies(filmId, rating, sessionId)
-      if (!success) return
+      await this.apiService.rateMovies(filmId, rating, sessionId)
 
       this.setState(({ films }) => {
         return {
@@ -70,8 +60,6 @@ export default class RatedPage extends Component {
           }),
         }
       })
-
-      onChangeRatedList()
     } catch (error) {
       this.setState({
         hasError: true,
@@ -81,6 +69,7 @@ export default class RatedPage extends Component {
 
   render() {
     const { films, loading, error, currentPage, countItems } = this.state
+    console.log(films)
     const errorMessage = error ? <AlertMessage /> : null
     const spinner = loading ? <Spinner /> : null
     const content = !(loading || error) ? (

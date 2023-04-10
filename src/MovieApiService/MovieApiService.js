@@ -40,10 +40,7 @@ export default class MovieApiService {
     return fetch(
       `https://api.themoviedb.org/3/movie/${filmId}/rating?api_key=0771135d11319620bd660054ca05d200&guest_session_id=${session_id}`,
       requestOptions
-    )
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-      .catch((error) => console.log('error', error))
+    ).catch((error) => console.log('error', error))
   }
 
   getMoviesRating = async (page = 1, session_id) => {

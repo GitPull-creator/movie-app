@@ -10,7 +10,7 @@ import MovieApiService from '../../MovieApiService/MovieApiService'
 export default class SearchPage extends Component {
   apiService = new MovieApiService()
   state = {
-    searchFormText: 'john wick',
+    searchFormText: 'a',
     currentPage: 1,
     countItems: null,
     films: [],
@@ -64,11 +64,10 @@ export default class SearchPage extends Component {
   }
 
   handleFilmRateChange = async (filmId, rating) => {
-    const { onChangeRatedList, sessionId } = this.props
+    const { sessionId } = this.props
 
     try {
-      const { success } = await this.apiService.rateMovies(filmId, rating, sessionId)
-      if (!success) return
+      await this.apiService.rateMovies(filmId, rating, sessionId)
 
       this.setState(({ films }) => {
         return {
@@ -79,13 +78,10 @@ export default class SearchPage extends Component {
                 rating,
               }
             }
-
             return film
           }),
         }
       })
-
-      onChangeRatedList()
     } catch (error) {
       this.setState({
         hasError: true,
@@ -95,6 +91,7 @@ export default class SearchPage extends Component {
 
   render() {
     const { films, loading, error, currentPage, countItems } = this.state
+    console.log(films)
     const errorMessage = error ? <AlertMessage /> : null
     const spinner = loading ? <Spinner /> : null
     const content = !(loading || error) ? (
