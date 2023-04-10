@@ -5,7 +5,6 @@ import MovieApiService from '../../MovieApiService/MovieApiService'
 import AlertMessage from '../../components/AlertMessage'
 import Spinner from '../../components/Spinner'
 import FilmList from '../../components/FilmList'
-import SearchForm from "../../components/SearchForm"
 
 export default class RatedPage extends Component {
   apiService = new MovieApiService()
@@ -19,6 +18,14 @@ export default class RatedPage extends Component {
 
   componentDidMount() {
     this.updateFilms(this.state.currentPage)
+  }
+
+  componentDidUpdate({ ratedListChanged: prevRatedListChanged }) {
+    const { ratedListChanged } = this.props
+
+    if (ratedListChanged !== prevRatedListChanged) {
+      this.updateFilms()
+    }
   }
 
   OnCurrentPageChange = (currentPage) => {
@@ -39,7 +46,36 @@ export default class RatedPage extends Component {
   }
 
   updateFilms(page) {
-    this.apiService.getMovies(page).then(this.onFilmsLoaded).catch(this.onError)
+    this.apiService.getMoviesRating(page).then(this.onFilmsLoaded).catch(this.onError)
+  }
+  handleFilmRateChange = async (filmId, rating) => {
+    const { onChangeRatedList } = this.props
+
+    try {
+      const { success } = await this.apiService.rateMovies(filmId, rating)
+      if (!success) return
+
+      this.setState(({ films }) => {
+        return {
+          films: films.map((film) => {
+            if (film.id === filmId) {
+              return {
+                ...film,
+                rating,
+              }
+            }
+
+            return film
+          }),
+        }
+      })
+
+      onChangeRatedList()
+    } catch (error) {
+      this.setState({
+        hasError: true,
+      })
+    }
   }
 
   render() {
@@ -52,6 +88,7 @@ export default class RatedPage extends Component {
         currentPage={currentPage}
         countItems={countItems}
         onCurrentPageChange={this.OnCurrentPageChange}
+        onRateChange={this.handleFilmRateChange}
       />
     ) : null
     return (
@@ -64,10 +101,10 @@ export default class RatedPage extends Component {
   }
 }
 
-const View = ({ films, currentPage, countItems, onCurrentPageChange }) => {
+const View = ({ films, currentPage, countItems, onCurrentPageChange, onRateChange }) => {
   return (
     <>
-      <FilmList films={films} />
+      <FilmList films={films} onRateChange={onRateChange} />
       <Pagination
         className="movies-container__pagination"
         size="small"

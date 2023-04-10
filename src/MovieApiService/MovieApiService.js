@@ -27,6 +27,39 @@ export default class MovieApiService {
     return d instanceof Date && !isNaN(d)
   }
 
+  rateMovies(filmId, rate) {
+    let formData = new FormData()
+    formData.append('value', `${rate}`)
+
+    let requestOptions = {
+      method: 'POST',
+      body: formData,
+      redirect: 'follow',
+    }
+
+    return fetch(
+      `https://api.themoviedb.org/3/movie/${filmId}/rating?api_key=0771135d11319620bd660054ca05d200&guest_session_id=00710bb4934506fd93c1035413fe09f5`,
+      requestOptions
+    )
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.log('error', error))
+  }
+
+  getMoviesRating = async (page = 1) => {
+    return await this.getResource(
+      `https://api.themoviedb.org/3/guest_session/00710bb4934506fd93c1035413fe09f5/rated/movies?api_key=0771135d11319620bd660054ca05d200&language=en-US&sort_by=created_at.asc&page=${page}`
+    ).then((res) => {
+      const { page: currentPage, total_pages: countPages, total_results: countItems, results } = res
+      return {
+        currentPage,
+        countPages,
+        countItems,
+        films: this._transformMovies(results),
+      }
+    })
+  }
+
   getMovies = async (query, page = 1) => {
     return await this.getResource(`${this._baseUrl}${this._apyKey}&language=en-US&query=${query}&page=${page}`).then(
       (res) => {
@@ -66,9 +99,5 @@ export default class MovieApiService {
         rate: vote_average,
       }
     })
-  }
-
-  _transformGenreIds(genreIds, genres) {
-    return genreIds.map((genreId) => genres[genreId])
   }
 }

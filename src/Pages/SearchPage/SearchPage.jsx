@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import { Pagination } from 'antd'
 
-import MovieApiService from '../../MovieApiService/MovieApiService'
 import SearchForm from '../../components/SearchForm'
 import AlertMessage from '../../components/AlertMessage'
 import Spinner from '../../components/Spinner'
 import FilmList from '../../components/FilmList'
+import MovieApiService from '../../MovieApiService/MovieApiService'
 
 export default class SearchPage extends Component {
   apiService = new MovieApiService()
@@ -62,6 +62,36 @@ export default class SearchPage extends Component {
     this.apiService.getMovies(query, page).then(this.onFilmsLoaded).catch(this.onError)
   }
 
+  handleFilmRateChange = async (filmId, rating) => {
+    const { onChangeRatedList } = this.props
+
+    try {
+      const { success } = await this.apiService.rateMovies(filmId, rating)
+      if (!success) return
+
+      this.setState(({ films }) => {
+        return {
+          films: films.map((film) => {
+            if (film.id === filmId) {
+              return {
+                ...film,
+                rating,
+              }
+            }
+
+            return film
+          }),
+        }
+      })
+
+      onChangeRatedList()
+    } catch (error) {
+      this.setState({
+        hasError: true,
+      })
+    }
+  }
+
   render() {
     const { films, loading, error, currentPage, countItems } = this.state
     const errorMessage = error ? <AlertMessage /> : null
@@ -72,6 +102,7 @@ export default class SearchPage extends Component {
         currentPage={currentPage}
         countItems={countItems}
         onCurrentPageChange={this.OnCurrentPageChange}
+        onRateChange={this.handleFilmRateChange}
       />
     ) : null
     return (
@@ -87,10 +118,10 @@ export default class SearchPage extends Component {
   }
 }
 
-const View = ({ films, currentPage, countItems, onCurrentPageChange }) => {
+const View = ({ films, currentPage, countItems, onCurrentPageChange, onRateChange }) => {
   return (
     <>
-      <FilmList films={films} />
+      <FilmList films={films} onRateChange={onRateChange} />
       <Pagination
         className="movies-container__pagination"
         size="small"
