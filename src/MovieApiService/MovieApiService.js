@@ -85,7 +85,7 @@ export default class MovieApiService {
   }
 
   _transformMovies(arr) {
-    return arr.map(({ id, original_title, release_date, genre_ids, overview, poster_path, vote_average }) => {
+    return arr.map(({ id, original_title, release_date, genre_ids, overview, poster_path, vote_average, rating }) => {
       return {
         id: id,
         title: original_title,
@@ -94,6 +94,7 @@ export default class MovieApiService {
         description: overview,
         poster: this.getPosterUrl(poster_path),
         rate: vote_average,
+        rating: rating,
       }
     })
   }
