@@ -27,7 +27,7 @@ export default class MovieApiService {
     return d instanceof Date && !isNaN(d)
   }
 
-  rateMovies(filmId, rate) {
+  rateMovies(filmId, rate, session_id) {
     let formData = new FormData()
     formData.append('value', `${rate}`)
 
@@ -38,7 +38,7 @@ export default class MovieApiService {
     }
 
     return fetch(
-      `https://api.themoviedb.org/3/movie/${filmId}/rating?api_key=0771135d11319620bd660054ca05d200&guest_session_id=00710bb4934506fd93c1035413fe09f5`,
+      `https://api.themoviedb.org/3/movie/${filmId}/rating?api_key=0771135d11319620bd660054ca05d200&guest_session_id=${session_id}`,
       requestOptions
     )
       .then((response) => response.text())
@@ -46,9 +46,9 @@ export default class MovieApiService {
       .catch((error) => console.log('error', error))
   }
 
-  getMoviesRating = async (page = 1) => {
+  getMoviesRating = async (page = 1, session_id) => {
     return await this.getResource(
-      `https://api.themoviedb.org/3/guest_session/00710bb4934506fd93c1035413fe09f5/rated/movies?api_key=0771135d11319620bd660054ca05d200&language=en-US&sort_by=created_at.asc&page=${page}`
+      `https://api.themoviedb.org/3/guest_session/${session_id}/rated/movies?${this._apyKey}&language=en-US&sort_by=created_at.asc&page=${page}`
     ).then((res) => {
       const { page: currentPage, total_pages: countPages, total_results: countItems, results } = res
       return {

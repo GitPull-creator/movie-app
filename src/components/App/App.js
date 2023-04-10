@@ -13,11 +13,15 @@ import RatedPage from '../../Pages/RatedPage'
 export default class MoviesApp extends Component {
   apiService = new MovieApiService()
   state = {
-    sessionId: '00710bb4934506fd93c1035413fe09f',
     currentTab: '1',
   }
 
   componentDidMount() {
+    this.apiService.newGuestSession().then(({ sessionId }) => {
+      this.setState({
+        sessionId,
+      })
+    })
     this.apiService.getGenresDictionary().then((genres) => {
       this.setState({
         genres,
@@ -30,9 +34,6 @@ export default class MoviesApp extends Component {
       currentTab: key,
     })
   }
-  onSessionLoaded = ({ sessionId }) => {
-    this.setState({ sessionId })
-  }
 
   render() {
     const { genres, sessionId, currentTab } = this.state
@@ -42,7 +43,7 @@ export default class MoviesApp extends Component {
           <Content className="movies-container">
             <Tabs defaultActiveKey={currentTab} centered onTabClick={this.handleTabClick}>
               <TabPane tab="Search" key="1" className="movies-container__tab">
-                {currentTab === '1' ? <SearchPage /> : null}
+                {currentTab === '1' ? <SearchPage sessionId={sessionId} /> : null}
               </TabPane>
               <TabPane tab="Rated" key="2" className="movies-container__tab">
                 {currentTab === '2' ? <RatedPage sessionId={sessionId} /> : null}

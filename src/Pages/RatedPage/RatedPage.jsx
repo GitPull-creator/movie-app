@@ -46,13 +46,14 @@ export default class RatedPage extends Component {
   }
 
   updateFilms(page) {
-    this.apiService.getMoviesRating(page).then(this.onFilmsLoaded).catch(this.onError)
+    const { sessionId } = this.props
+    this.apiService.getMoviesRating(page, sessionId).then(this.onFilmsLoaded).catch(this.onError)
   }
   handleFilmRateChange = async (filmId, rating) => {
-    const { onChangeRatedList } = this.props
+    const { onChangeRatedList, sessionId } = this.props
 
     try {
-      const { success } = await this.apiService.rateMovies(filmId, rating)
+      const { success } = await this.apiService.rateMovies(filmId, rating, sessionId)
       if (!success) return
 
       this.setState(({ films }) => {
