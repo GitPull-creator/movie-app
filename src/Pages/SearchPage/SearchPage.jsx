@@ -18,15 +18,31 @@ export default class SearchPage extends Component {
     error: false,
     genres: '',
     sessionId: this.props.sessionId,
+    savedMovies: [],
   }
 
   componentDidMount() {
+    console.log('mount')
     this.apiService.getGenresDictionary().then((genres) => {
       this.setState({
         genres,
       })
     })
     this.updateFilms(this.state.searchFormText, this.state.currentPage)
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { savedMovies, films } = this.state
+    if (prevState.films !== this.state.films) {
+      console.log('changed')
+      savedMovies.forEach((item) => {
+        films.forEach((film) => {
+          if (item.id === film.id && item.rating !== film.rating) {
+            this.handleFilmRateChange(item.id, item.rating).catch(this.onError)
+          }
+        })
+      })
+    }
   }
 
   onSearchTextChange = (searchFormText) => {
@@ -82,6 +98,9 @@ export default class SearchPage extends Component {
           }),
         }
       })
+      this.apiService.getMoviesRating(sessionId).then((films) => {
+        this.setState({ savedMovies: films.films })
+      })
     } catch (error) {
       this.setState({
         hasError: true,
@@ -91,7 +110,6 @@ export default class SearchPage extends Component {
 
   render() {
     const { films, loading, error, currentPage, countItems } = this.state
-    console.log(films)
     const errorMessage = error ? <AlertMessage /> : null
     const spinner = loading ? <Spinner /> : null
     const content = !(loading || error) ? (

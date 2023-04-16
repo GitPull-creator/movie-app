@@ -38,7 +38,7 @@ export default class RatedPage extends Component {
 
   updateFilms(page) {
     const { sessionId } = this.props
-    this.apiService.getMoviesRating(page, sessionId).then(this.onFilmsLoaded).catch(this.onError)
+    this.apiService.getMoviesRating(sessionId, page).then(this.onFilmsLoaded).catch(this.onError)
   }
   handleFilmRateChange = async (filmId, rating) => {
     const { sessionId } = this.props
@@ -55,7 +55,6 @@ export default class RatedPage extends Component {
                 rating,
               }
             }
-
             return film
           }),
         }
@@ -69,7 +68,6 @@ export default class RatedPage extends Component {
 
   render() {
     const { films, loading, error, currentPage, countItems } = this.state
-    console.log(films)
     const errorMessage = error ? <AlertMessage /> : null
     const spinner = loading ? <Spinner /> : null
     const content = !(loading || error) ? (

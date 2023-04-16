@@ -43,7 +43,7 @@ export default class MovieApiService {
     ).catch((error) => console.log('error', error))
   }
 
-  getMoviesRating = async (page = 1, session_id) => {
+  getMoviesRating = async (session_id, page = 1) => {
     return await this.getResource(
       `https://api.themoviedb.org/3/guest_session/${session_id}/rated/movies?${this._apyKey}&language=en-US&sort_by=created_at.asc&page=${page}`
     ).then((res) => {

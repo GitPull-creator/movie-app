@@ -14,6 +14,7 @@ export default class MoviesApp extends Component {
   apiService = new MovieApiService()
   state = {
     currentTab: '1',
+    sessionId: '',
   }
 
   componentDidMount() {
@@ -41,7 +42,12 @@ export default class MoviesApp extends Component {
       <GenresProvider value={genres}>
         <Layout>
           <Content className="movies-container">
-            <Tabs defaultActiveKey={currentTab} destroyInactiveTabPane={true} centered onTabClick={this.handleTabClick}>
+            <Tabs
+              defaultActiveKey={currentTab}
+              destroyInactiveTabPane={false}
+              centered
+              onTabClick={this.handleTabClick}
+            >
               <TabPane tab="Search" key="1" className="movies-container__tab">
                 {currentTab === '1' ? <SearchPage sessionId={sessionId} /> : null}
               </TabPane>
