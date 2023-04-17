@@ -15,6 +15,7 @@ export default class MoviesApp extends Component {
   state = {
     currentTab: '1',
     sessionId: '',
+    savedMovies: [],
   }
 
   componentDidMount() {
@@ -36,8 +37,14 @@ export default class MoviesApp extends Component {
     })
   }
 
+  getSavedMovies = () => {
+    this.apiService.getMoviesRating(this.state.sessionId).then((films) => {
+      this.setState({ savedMovies: films.films })
+    })
+  }
+
   render() {
-    const { genres, sessionId, currentTab } = this.state
+    const { genres, sessionId, currentTab, savedMovies } = this.state
     return (
       <GenresProvider value={genres}>
         <Layout>
@@ -49,7 +56,9 @@ export default class MoviesApp extends Component {
               onTabClick={this.handleTabClick}
             >
               <TabPane tab="Search" key="1" className="movies-container__tab">
-                {currentTab === '1' ? <SearchPage sessionId={sessionId} /> : null}
+                {currentTab === '1' ? (
+                  <SearchPage savedMovies={savedMovies} sessionId={sessionId} getSavedMovies={this.getSavedMovies} />
+                ) : null}
               </TabPane>
               <TabPane tab="Rated" key="2" className="movies-container__tab">
                 {currentTab === '2' ? <RatedPage sessionId={sessionId} /> : null}

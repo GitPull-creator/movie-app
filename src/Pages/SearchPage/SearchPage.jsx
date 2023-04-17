@@ -18,7 +18,7 @@ export default class SearchPage extends Component {
     error: false,
     genres: '',
     sessionId: this.props.sessionId,
-    savedMovies: [],
+    savedMovies: this.props.savedMovies,
   }
 
   componentDidMount() {
@@ -80,7 +80,7 @@ export default class SearchPage extends Component {
   }
 
   handleFilmRateChange = async (filmId, rating) => {
-    const { sessionId } = this.props
+    const { sessionId, getSavedMovies } = this.props
 
     try {
       await this.apiService.rateMovies(filmId, rating, sessionId)
@@ -98,9 +98,7 @@ export default class SearchPage extends Component {
           }),
         }
       })
-      this.apiService.getMoviesRating(sessionId).then((films) => {
-        this.setState({ savedMovies: films.films })
-      })
+      getSavedMovies()
     } catch (error) {
       this.setState({
         hasError: true,
