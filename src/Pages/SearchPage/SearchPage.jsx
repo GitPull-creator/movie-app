@@ -98,6 +98,9 @@ export default class SearchPage extends Component {
           }),
         }
       })
+      this.apiService.getMoviesRating(sessionId).then((films) => {
+        this.setState({ savedMovies: films.films })
+      })
       getSavedMovies()
     } catch (error) {
       this.setState({
