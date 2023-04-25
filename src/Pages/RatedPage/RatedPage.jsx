@@ -1,13 +1,15 @@
 import React, { Component } from 'react'
 import { Pagination } from 'antd'
 
-import MovieApiService from '../../MovieApiService/MovieApiService'
 import AlertMessage from '../../components/AlertMessage'
 import Spinner from '../../components/Spinner'
 import FilmList from '../../components/FilmList'
+import MovieSessionService from '../../MovieSessionService/MovieSessionService'
+import MovieBaseService from '../../MovieBaseService/MovieBaseService'
 
 export default class RatedPage extends Component {
-  apiService = new MovieApiService()
+  movieBaseService = new MovieBaseService()
+  movieSessionService = new MovieSessionService()
   state = {
     currentPage: 1,
     countItems: null,
@@ -38,13 +40,13 @@ export default class RatedPage extends Component {
 
   updateFilms(page) {
     const { sessionId } = this.props
-    this.apiService.getMoviesRating(sessionId, page).then(this.onFilmsLoaded).catch(this.onError)
+    this.movieSessionService.getMoviesRating(sessionId, page).then(this.onFilmsLoaded).catch(this.onError)
   }
   handleFilmRateChange = async (filmId, rating) => {
     const { sessionId } = this.props
 
     try {
-      await this.apiService.rateMovies(filmId, rating, sessionId)
+      await this.movieBaseService.rateMovies(filmId, rating, sessionId)
 
       this.setState(({ films }) => {
         return {

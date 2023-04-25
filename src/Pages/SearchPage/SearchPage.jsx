@@ -5,10 +5,12 @@ import SearchForm from '../../components/SearchForm'
 import AlertMessage from '../../components/AlertMessage'
 import Spinner from '../../components/Spinner'
 import FilmList from '../../components/FilmList'
-import MovieApiService from '../../MovieApiService/MovieApiService'
+import MovieBaseService from '../../MovieBaseService/MovieBaseService'
+import MovieSessionService from '../../MovieSessionService/MovieSessionService'
 
 export default class SearchPage extends Component {
-  apiService = new MovieApiService()
+  movieBaseService = new MovieBaseService()
+  movieSessionService = new MovieSessionService()
   state = {
     searchFormText: 'a',
     currentPage: 1,
@@ -22,19 +24,29 @@ export default class SearchPage extends Component {
   }
 
   componentDidMount() {
-    console.log('mount')
-    this.apiService.getGenresDictionary().then((genres) => {
+    this.movieBaseService.getGenresDictionary().then((genres) => {
       this.setState({
         genres,
       })
     })
     this.updateFilms(this.state.searchFormText, this.state.currentPage)
+    if (localStorage.getItem('savedMovies') !== null) {
+      this.setState({
+        savedMovies: JSON.parse(localStorage.getItem('savedMovies')),
+      })
+      this.state.savedMovies.forEach((item) => {
+        this.state.films.forEach((film) => {
+          if (item.id === film.id && item.rating !== film.rating) {
+            this.handleFilmRateChange(item.id, item.rating).catch(this.onError)
+          }
+        })
+      })
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
     const { savedMovies, films } = this.state
     if (prevState.films !== this.state.films) {
-      console.log('changed')
       savedMovies.forEach((item) => {
         films.forEach((film) => {
           if (item.id === film.id && item.rating !== film.rating) {
@@ -43,6 +55,10 @@ export default class SearchPage extends Component {
         })
       })
     }
+  }
+
+  componentWillUnmount() {
+    localStorage.setItem('savedMovies', JSON.stringify(this.state.savedMovies))
   }
 
   onSearchTextChange = (searchFormText) => {
@@ -76,14 +92,14 @@ export default class SearchPage extends Component {
   }
 
   updateFilms(query, page) {
-    this.apiService.getMovies(query, page).then(this.onFilmsLoaded).catch(this.onError)
+    this.movieBaseService.getMovies(query, page).then(this.onFilmsLoaded).catch(this.onError)
   }
 
   handleFilmRateChange = async (filmId, rating) => {
     const { sessionId, getSavedMovies } = this.props
 
     try {
-      await this.apiService.rateMovies(filmId, rating, sessionId)
+      await this.movieBaseService.rateMovies(filmId, rating, sessionId)
 
       this.setState(({ films }) => {
         return {
@@ -98,7 +114,7 @@ export default class SearchPage extends Component {
           }),
         }
       })
-      this.apiService.getMoviesRating(sessionId).then((films) => {
+      this.movieSessionService.getMoviesRating(sessionId).then((films) => {
         this.setState({ savedMovies: films.films })
       })
       getSavedMovies()

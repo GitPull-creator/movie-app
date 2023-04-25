@@ -5,13 +5,15 @@ import 'antd/dist/reset.css'
 import { Content } from 'antd/es/layout/layout'
 import TabPane from 'antd/es/tabs/TabPane'
 
-import MovieApiService from '../../MovieApiService/MovieApiService'
+import MovieBaseService from '../../MovieBaseService/MovieBaseService'
 import SearchPage from '../../Pages/SearchPage'
 import { GenresProvider } from '../GenresContext'
 import RatedPage from '../../Pages/RatedPage'
+import MovieSessionService from '../../MovieSessionService/MovieSessionService'
 
 export default class MoviesApp extends Component {
-  apiService = new MovieApiService()
+  movieBaseService = new MovieBaseService()
+  movieSessionService = new MovieSessionService()
   state = {
     currentTab: '1',
     sessionId: '',
@@ -19,12 +21,19 @@ export default class MoviesApp extends Component {
   }
 
   componentDidMount() {
-    this.apiService.newGuestSession().then(({ sessionId }) => {
+    if (localStorage.getItem('sessionId') !== null) {
       this.setState({
-        sessionId,
+        sessionId: localStorage.getItem('sessionId'),
       })
-    })
-    this.apiService.getGenresDictionary().then((genres) => {
+    } else {
+      this.movieSessionService.newGuestSession().then(({ sessionId }) => {
+        localStorage.setItem('sessionId', sessionId)
+        this.setState({
+          sessionId,
+        })
+      })
+    }
+    this.movieBaseService.getGenresDictionary().then((genres) => {
       this.setState({
         genres,
       })
@@ -38,7 +47,7 @@ export default class MoviesApp extends Component {
   }
 
   getSavedMovies = () => {
-    this.apiService.getMoviesRating(this.state.sessionId).then((films) => {
+    this.movieSessionService.getMoviesRating(this.state.sessionId).then((films) => {
       this.setState({ savedMovies: films.films })
     })
   }
