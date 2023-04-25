@@ -22,18 +22,16 @@ export default class MovieBaseService {
   }
 
   async rateMovies(filmId, rate, session_id) {
-    let formData = new FormData()
-    formData.append('value', `${rate}`)
-
-    let requestOptions = {
-      method: 'POST',
-      body: formData,
-      redirect: 'follow',
-    }
+    let postData = new URLSearchParams({
+      value: rate,
+    })
 
     let res = await fetch(
       `https://api.themoviedb.org/3/movie/${filmId}/rating?${this._apyKey}&guest_session_id=${session_id}`,
-      requestOptions
+      {
+        method: 'POST',
+        body: postData,
+      }
     )
     if (!res.ok) throw new Error(`Could not post, status: ${res.status}`)
     return res
